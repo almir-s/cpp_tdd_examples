@@ -4,7 +4,7 @@ source_dir = files([])
 
 thread_dep = dependency('threads')
 
-include_dir = include_directories('includes')
+include_dir = include_directories('include')
 
 project_dep = declare_dependency(include_directories: include_dir, sources: source_dir, dependencies: [thread_dep])
 

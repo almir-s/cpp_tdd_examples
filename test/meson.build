@@ -1,4 +1,4 @@
-gtest_srcs= files(['gtest_main.cpp', 'soundexTest.cpp'])
+gtest_srcs= files(['gtest_main.cpp', 'soundexTest.cpp', 'retweetCollectionTest.cpp'])
 
 
 gtest_dep = gtest_sp.get_variable('gtest_dep')

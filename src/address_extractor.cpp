@@ -1,8 +1,9 @@
-#include "json/reader.h"
-#include <AddressExtractor.h>
+#include <address_extractor.h>
 #include <iostream>
 #include <ostream>
 #include <string>
+
+#include "json/reader.h"
 
 using namespace std;
 using namespace Json;
@@ -11,7 +12,7 @@ Address AddressExtractor::addressFrom(const string& json) const {
    Address address;
    Value jsonAddress{jsonAddressFrom(json)};
    populate(address, jsonAddress);
-   return address; 
+   return address;
 }
 
 Value AddressExtractor::jsonAddressFrom(const string& json) const {
@@ -30,7 +31,7 @@ Value AddressExtractor::parse(const string& json) const {
    Value root;
    Reader reader;
    reader.parse(json, root);
-   return root; 
+   return root;
 }
 
 string AddressExtractor::getString(Value& result, const string& name) const {

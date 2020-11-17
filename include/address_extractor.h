@@ -1,7 +1,7 @@
 #ifndef AddressExtractor_h
 #define AddressExtractor_h
 
-#include <Address.h>
+#include <address.h>
 #include <json/reader.h>
 #include <json/value.h>
 

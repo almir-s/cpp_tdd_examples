@@ -1,10 +1,12 @@
-#include <Http.h>
+#include <http.h>
 #include <gmock/gmock-generated-function-mockers.h>
 #include <gmock/gmock-generated-nice-strict.h>
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <place_description_service.h>
+
+#include <memory>
 
 using namespace std;
 using namespace testing;
@@ -18,37 +20,49 @@ class APlaceDescriptionService : public Test {
 const string APlaceDescriptionService::ValidLatitude("38.005");
 const string APlaceDescriptionService::ValidLongitude("-104.44");
 
-class HttpStub : public Http {
+class HttpStub: public Http {
    public:
    MOCK_METHOD0(initialize, void());
    MOCK_CONST_METHOD1(get, string(const string&));
 };
 
+class PlaceDescriptionService_StubHttpService : public PlaceDescriptionService {
+   public:
+   PlaceDescriptionService_StubHttpService(shared_ptr<HttpStub> httpStub)
+       : httpStub_{httpStub} {}
+   shared_ptr<Http> httpService() const override { return httpStub_; }
+   shared_ptr<Http> httpStub_;
+
+};
+
 TEST_F(APlaceDescriptionService, MakesHttpRequestToObtainAddress) {
    InSequence forceExpectationOrder;
-   HttpStub httpStub;
+   shared_ptr<HttpStub> httpStub{new HttpStub};
    string urlStart{
        "http://open.mapquestapi.com/nominatim/v1/reverse?format=json&"};
    auto expectedURL = urlStart +
                       "lat=" + APlaceDescriptionService::ValidLatitude + "&" +
                       "lon=" + APlaceDescriptionService::ValidLongitude;
-   EXPECT_CALL(httpStub, initialize());
-   EXPECT_CALL(httpStub, get(expectedURL));
-   PlaceDescriptionService service{&httpStub};
+   EXPECT_CALL(*httpStub, initialize());
+   EXPECT_CALL(*httpStub, get(expectedURL));
+   PlaceDescriptionService_StubHttpService service{httpStub};
    service.summaryDescription(ValidLatitude, ValidLongitude);
 }
 
 TEST_F(APlaceDescriptionService,
        FormatsRetrievedAddressIntoSummaryDescription) {
-   NiceMock<HttpStub> httpStub;
-   EXPECT_CALL(httpStub, get(_))
+   // NiceMock<HttpStub> httpStub;
+   // NiceMock<shared_ptr<HttpStub>> httpStub;
+   shared_ptr<HttpStub> httpStub{new HttpStub};
+   EXPECT_CALL(*httpStub, get(_))
        .WillOnce(Return(
            R"({ "address": {
               "road":"Drury Ln",
               "city":"Fountain",
               "state":"CO",
               "country":"US" }})"));
-   PlaceDescriptionService service(&httpStub);
+   // PlaceDescriptionService service;
+   PlaceDescriptionService_StubHttpService service{httpStub};
    auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
    ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));
 }

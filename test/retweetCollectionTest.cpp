@@ -1,4 +1,4 @@
-#include <RetweetCollection.h>
+#include <retweet_collection.h>
 #include <exception>
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock.h>
@@ -7,7 +7,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "Tweet.h"
+#include <tweet.h>
 
 using namespace ::testing;
 

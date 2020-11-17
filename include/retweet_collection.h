@@ -1,7 +1,7 @@
 #ifndef RetweetCollection_h
 #define RetweetCollection_h
 
-#include <Tweet.h>
+#include <tweet.h>
 
 class RetweetCollection {
   private:

@@ -1,6 +1,6 @@
 project('tdd_examples', 'cpp', default_options:['cpp_std=c++14'])
 
-source_dir = files(['src/address_extractor.cpp', 'src/place_description_service.cpp', 'src/address_extractor.cpp'])
+source_dir = files(['src/address_extractor.cpp', 'src/place_description_service.cpp', 'src/address_extractor.cpp', 'src/curl_http.cpp'])
 
 json_sp = subproject('jsoncpp')
 json_dep = json_sp.get_variable('jsoncpp_dep')

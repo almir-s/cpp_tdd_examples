@@ -1,4 +1,4 @@
-#include <Soundex.h>
+#include <soundex.h>
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

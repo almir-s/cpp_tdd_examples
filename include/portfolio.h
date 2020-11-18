@@ -1,11 +1,11 @@
-#ifndef PORTFOLIO
-#define PORTFOLIO
+#ifndef PORTFOLIO_H
+#define PORTFOLIO_H
 
 #include <string>
 #include <exception>
 #include <unordered_map>
 #include <vector>
-#include "boost/date_time/gregorian/gregorian_types.hpp"
+#include <boost/date_time/gregorian/gregorian_types.hpp>
 #include <purchase_record.h>
 #include <holding.h>
 
@@ -50,4 +50,5 @@ private:
    std::unordered_map<std::string, std::vector<PurchaseRecord>> purchaseRecords_;
    std::unordered_map<std::string, Holding> holdings_;
 };
+
 #endif

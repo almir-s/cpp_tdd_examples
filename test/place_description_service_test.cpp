@@ -51,9 +51,8 @@ TEST_F(APlaceDescriptionService, MakesHttpRequestToObtainAddress) {
 
 TEST_F(APlaceDescriptionService,
        FormatsRetrievedAddressIntoSummaryDescription) {
-   // NiceMock<HttpStub> httpStub;
-   // NiceMock<shared_ptr<HttpStub>> httpStub;
    shared_ptr<HttpStub> httpStub{new HttpStub};
+   EXPECT_CALL(*httpStub, initialize());
    EXPECT_CALL(*httpStub, get(_))
        .WillOnce(Return(
            R"({ "address": {
@@ -61,7 +60,6 @@ TEST_F(APlaceDescriptionService,
               "city":"Fountain",
               "state":"CO",
               "country":"US" }})"));
-   // PlaceDescriptionService service;
    PlaceDescriptionService_StubHttpService service{httpStub};
    auto description = service.summaryDescription(ValidLatitude, ValidLongitude);
    ASSERT_THAT(description, Eq("Drury Ln, Fountain, CO, US"));

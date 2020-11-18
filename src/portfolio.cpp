@@ -5,7 +5,6 @@ using namespace std;
 using namespace boost::gregorian;
 
 bool Portfolio::IsEmpty() const { 
-//   return 0 == purchaseRecords_.size(); 
    return 0 == holdings_.size(); 
 }
 
@@ -49,7 +48,6 @@ void Portfolio::Add(const string& symbol, PurchaseRecord&& record) {
 }
 
 bool Portfolio::ContainsSymbol(const string& symbol) const {
-//   return purchaseRecords_.find(symbol) != purchaseRecords_.end();
    return holdings_.find(symbol) != holdings_.end();
 }
 
@@ -58,6 +56,5 @@ unsigned int Portfolio::ShareCount(const string& symbol) const {
 }
 
 vector<PurchaseRecord> Portfolio::Purchases(const string& symbol) const {
-//   return Find<vector<PurchaseRecord>>(purchaseRecords_, symbol);
    return Find<Holding>(holdings_, symbol).Purchases();
 }

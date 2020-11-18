@@ -1,30 +1,63 @@
 #include <portfolio.h>
+#include <numeric>
 
 using namespace std;
 using namespace boost::gregorian;
 
-bool Portfolio::IsEmpty() const { return 0 == holdings_.size(); }
-
-const date Portfolio::FIXED_PURCHASE_DATE(date(2014, Jan, 1));
-
-void Portfolio::Purchase(const string& symbol, unsigned int shareCount,
-                         const date& transactionDate) {
-   if (0 == shareCount) throw InvalidPurchaseException();
-   holdings_[symbol] = shareCount + ShareCount(symbol);
-   purchases_.push_back(PurchaseRecord(shareCount, transactionDate));
+bool Portfolio::IsEmpty() const { 
+//   return 0 == purchaseRecords_.size(); 
+   return 0 == holdings_.size(); 
 }
 
-void Portfolio::Sell(const std::string& symbol, unsigned int shareCount) {
+void Portfolio::Purchase(
+      const string& symbol, unsigned int shareCount, const date& transactionDate) {
+   Transact(symbol, shareCount, transactionDate);
+}
+
+void Portfolio::Sell(
+      const string& symbol, unsigned int shareCount, const date& transactionDate) {
    if (shareCount > ShareCount(symbol)) throw InvalidSellException();
-   holdings_[symbol] = ShareCount(symbol) - shareCount;
+   Transact(symbol, -shareCount, transactionDate);
+}
+
+void Portfolio::Transact(
+      const string& symbol, int shareChange, const date& transactionDate) {
+   ThrowIfShareCountIsZero(shareChange);
+   AddPurchaseRecord(symbol, shareChange, transactionDate);
+}
+
+void Portfolio::ThrowIfShareCountIsZero(int shareChange) const {
+   if (0 == shareChange) throw ShareCountCannotBeZeroException();
+}
+
+void Portfolio::AddPurchaseRecord(
+      const string& symbol, int shareChange, const date& date) {
+   if (!ContainsSymbol(symbol))
+      InitializePurchaseRecords(symbol);
+
+   Add(symbol, {shareChange, date});
+}
+
+void Portfolio::InitializePurchaseRecords(const string& symbol) {
+   purchaseRecords_[symbol] = vector<PurchaseRecord>();
+   holdings_[symbol] = Holding();
+}
+
+void Portfolio::Add(const string& symbol, PurchaseRecord&& record) {
+   purchaseRecords_[symbol].push_back(record);
+   holdings_[symbol].Add(record);
+}
+
+bool Portfolio::ContainsSymbol(const string& symbol) const {
+//   return purchaseRecords_.find(symbol) != purchaseRecords_.end();
+   return holdings_.find(symbol) != holdings_.end();
 }
 
 unsigned int Portfolio::ShareCount(const string& symbol) const {
-   auto it = holdings_.find(symbol);
-   if (it == holdings_.end()) return 0;
-   return it->second;
+   return Find<Holding>(holdings_, symbol).ShareCount();
 }
 
 vector<PurchaseRecord> Portfolio::Purchases(const string& symbol) const {
-   return purchases_;
+//   return Find<vector<PurchaseRecord>>(purchaseRecords_, symbol);
+   return Find<Holding>(holdings_, symbol).Purchases();
 }

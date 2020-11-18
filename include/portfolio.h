@@ -1,36 +1,53 @@
 #ifndef PORTFOLIO
 #define PORTFOLIO
 
-#include <boost/date_time/gregorian/gregorian_types.hpp>
-#include <exception>
 #include <string>
+#include <exception>
 #include <unordered_map>
 #include <vector>
+#include "boost/date_time/gregorian/gregorian_types.hpp"
+#include <purchase_record.h>
+#include <holding.h>
 
-struct PurchaseRecord {
-  PurchaseRecord(unsigned int shareCount, const boost::gregorian::date& date)
-      : ShareCount(shareCount), Date(date) {}
-  unsigned int ShareCount;
-  boost::gregorian::date Date;
+class ShareCountCannotBeZeroException: public std::exception {
 };
 
-class InvalidPurchaseException : public std::exception {};
-
-class InvalidSellException : public std::exception {};
+class InvalidSellException: public std::exception {
+};
 
 class Portfolio {
-  public:
-  static const boost::gregorian::date FIXED_PURCHASE_DATE;
-  bool IsEmpty() const;
-  void Purchase(const std::string& symbol, unsigned int shareCount,
-                const boost::gregorian::date& transactionDate =
-                    Portfolio::FIXED_PURCHASE_DATE);
-  void Sell(const std::string& symbol, unsigned int shareCount);
-  unsigned int ShareCount(const std::string& symbol) const;
-  std::vector<PurchaseRecord> Purchases(const std::string& symbol) const;
+public:
+   bool IsEmpty() const;
+   void Purchase(
+         const std::string& symbol, 
+         unsigned int shareCount,
+         const boost::gregorian::date& transactionDate);
+   void Sell(const std::string& symbol, 
+         unsigned int shareCount,
+         const boost::gregorian::date& transactionDate);
+   unsigned int ShareCount(const std::string& symbol) const;
+   std::vector<PurchaseRecord> Purchases(const std::string& symbol) const;
 
-  private:
-  std::unordered_map<std::string, unsigned int> holdings_;
-  std::vector<PurchaseRecord> purchases_;
+private:
+   void Transact(const std::string& symbol, 
+         int shareChange,
+         const boost::gregorian::date&);
+   void UpdateShareCount(const std::string& symbol, int shareChange);
+   void AddPurchaseRecord(
+         const std::string& symbol, int shareCount, const boost::gregorian::date&);
+   void ThrowIfShareCountIsZero(int shareChange) const;
+
+   bool ContainsSymbol(const std::string& symbol) const;
+   void InitializePurchaseRecords(const std::string& symbol);
+   void Add(const std::string& symbol, PurchaseRecord&& record);
+
+   template<typename T>
+   T Find(std::unordered_map<std::string, T> map, const std::string& key) const {
+      auto it = map.find(key);
+      return it == map.end() ? T{} : it->second;
+   }
+
+   std::unordered_map<std::string, std::vector<PurchaseRecord>> purchaseRecords_;
+   std::unordered_map<std::string, Holding> holdings_;
 };
 #endif

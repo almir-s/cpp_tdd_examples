@@ -1,5 +1,7 @@
 #include <address_extractor.h>
+
 #include <iostream>
+#include <memory>
 #include <ostream>
 #include <string>
 
@@ -29,8 +31,9 @@ void AddressExtractor::populate(Address& address, Value& jsonAddress) const {
 
 Value AddressExtractor::parse(const string& json) const {
    Value root;
-   Reader reader;
-   reader.parse(json, root);
+   CharReaderBuilder builder;
+   const std::unique_ptr<CharReader> reader(builder.newCharReader());
+   reader->parse(json.c_str(), json.c_str() + json.length(), &root, nullptr);
    return root;
 }
 

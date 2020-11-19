@@ -7,9 +7,10 @@ using namespace ::testing;
 
 class DifficultCollaborator {
   public:
-  virtual bool calculate(int* result) {
-    throw 1;
-  }
+  virtual bool calculate(int* result) { throw 1; }
+
+  virtual ~DifficultCollaborator() = default;
+  
 };
 
 class Target {

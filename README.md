@@ -13,4 +13,7 @@
       - meson ..
       - ninja
       - ./test/TddSessionTests
+        or use filter options for example: 
+          ./test/TddSessionTests --gtest_filter=APortfolio* 
+        to run APortfolio test Suit
 
